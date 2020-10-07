@@ -1,0 +1,155 @@
+%%
+\documentclass[11pt]{article}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage[bottom]{footmisc}
+\usepackage{xcolor}
+\usepackage{natbib}
+\usepackage{bigstrut}
+\usepackage{rotating} 
+\usepackage{booktabs}
+\bibliographystyle{econometrica}
+
+\usepackage{subcaption}
+
+%\marginpar{text}
+\setcounter{MaxMatrixCols}{10}
+
+\pagestyle{myheadings} \markright{This Version: \today }
+\parindent0.2in
+\parskip1ex plus1.5ex minus0.2ex
+\setcounter{secnumdepth}{5} \setcounter{tocdepth}{2} \voffset0cm
+\topmargin-0.5cm \oddsidemargin0.in \evensidemargin1.in
+\topmargin-1cm \oddsidemargin0.in \evensidemargin1.in
+\textheight9in \textwidth6.5in
+%\renewcommand{\baselinestretch}{0.1in}
+\newcommand{\bc}{\begin{center}}
+\newcommand{\ec}{\end{center}}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\bea}{\begin{eqnarray}}
+\newcommand{\eea}{\end{eqnarray}}
+\newcommand{\bean}{\begin{eqnarray*}}
+\newcommand{\eean}{\end{eqnarray*}}
+\newcommand{\refline}{\raisebox{1ex}{\underline{\hspace{2cm}} \quad}}
+\newcommand{\sz}{\scriptsize}
+
+\newcommand{\ve}{\varepsilon}
+
+\newtheorem{assumption}{Assumption}
+\newtheorem{procedure}{Procedure}
+\newtheorem{corollary}{Corollary}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+%\newcounter{pkt}
+%\newenvironment{tlist}{\begin{list}{(\roman{pkt})}{\usecounter{pkt}\parskip0ex\parsep0ex\itemsep0ex\topsep0ex}}{\end{list}}
+\def\EE{\mathord{I\kern-.35em E}}
+\def\PP{\mathord{I\kern-.3em P}}
+\def\QQ{\mathord{Q\kern-5pt\hbox{\raise1.1pt\hbox{\vrule height5pt}}\kern5pt}}
+\def\RR{\mathord{I\kern-.3em R}}
+
+\newcommand{\br}{\color{red}}
+\newcommand{\er}{\normalcolor}
+
+\newcommand{\bg}{\color{blue}}
+\newcommand{\eg}{\normalcolor}
+
+\bibliographystyle{ecta}
+
+\newcounter{saveeqn}
+\newcommand{\alpheqn}{\setcounter{saveeqn}{\value{section}}\renewcommand{\theequation}{\mbox{\Alph{saveeqn}.\arabic{equation}}}}
+\newcommand{\reseteqn}{\setcounter{equation}{\value{saveeqn}}\renewcommand{\theequation}{\arabic{equation}}}
+%\input{tcilatex}
+%\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{3}
+
+
+
+%opening
+\title{Note 3: Replication of Shrinkage estimation of wage by David and Minchul}
+\author{Ignacio Sarmiento}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Replicate what is in the note, document
+\end{abstract}
+
+%------------------------
+\section{Motivation}
+To estimate the average wage by cities and by occupations. 
+
+Data description 
+\begin{itemize}
+\item 276 cmsa
+\item 64 occupation classifications
+\item number of observations: 4,284,808
+\item year: 2015
+\end{itemize}
+
+
+%------------------------
+\section{Empirical Model}
+
+%------------------------
+\subsection{A model with 64 occupations}
+\[
+y_{ij} = D_{ij}' \beta_{j} + (X_{ij}^{f})' \beta^{f} +e_{ij} , \quad e_{ij} \sim_{i.i.d.} N(0, \sigma^{2})
+\]
+where 
+\begin{itemize}
+\item cities are indexed by $j$, ($j=1,2,...,276$).
+\item $D_{ij}$: $64 \times1$, occupation indicator. 
+
+\item $\beta_{j}$: $64 \times 1$. Average wage of occupations in city $j$ after controlling for other demographic info. 
+\item $X_{ij}^{f}$: $n_{f} \times 1$, fixed regressors, demographic characteristics such as age, gender, US born, etc.
+\item $\beta^{f}$: $n_{f} \times 1$
+\end{itemize}
+and we put prior on $\beta_{j}$ 
+\[
+\beta_{j} = m_{0} + m_{1} \log p_{j} + \ve_{j}, \quad \ve_{j} \sim N(0, \Sigma)
+\]
+where the average wage in city $j$ depends on log population. $m_{0}$ and $m_{1}$ are $64\times 1$ vector, and $\Sigma$ is $64\times 64$ matrix.
+
+Few remarks.
+\begin{itemize}
+\item If $m_{k,1}>0$, then the model implies that average wage of the $k$th occupation is higher for the larger city. 
+\item Suppose there are two cities with the same size (population), then the model implies that average wage are similar to each other. (so that we can borrow information from other cities).
+\item We also borrow wage information from other occupations. We use more information from similar occupation. ``similarity'' among occupations is measured by the implied correlation from $\Sigma$. Note that we estimate $\Sigma$ from the data, 
+\end{itemize}
+
+\paragraph{Occupations, $D_{ij}$.} $D_{ij}=(1,0,0,...,0)$ if the occupation of the person $i$ in city $j$ is the first occupation. If $k$th element in $D_{ij}$ is 1 and other elements take 0, then the occupation of the person $i$ in city $j$ is $k$th occupation. 
+
+$||D_{ij}||=1$. That is, the person can have only one occupation. 64 occupations are described in ``Occupation\_names.xlsx''.
+
+***No observations in occupation occ=35 in the data set. Actually, we have 63 occupations...
+
+
+\paragraph{Fixed regressors, $X_{ij}^{f}$}These regressors are ``fixed'' in the sense that their coefficients do not vary by cities. In our application, we have the following as fixed regressors.
+\begin{itemize}
+\item $X_{1,ij}$: 1 if home owner (p), 0 if renter (r) 
+\item $X_{2,ij}$: 1 if male (m), 0 if female (f)
+\item $X_{3,ij}$: 1 if education = g
+\item $X_{4,ij}$: 1 if education = c
+\item $X_{5,ij}$: 1 if education = s
+\item $X_{6,ij}$: 1 if education = h
+\item $X_{7,ij}$: 1 if race = w
+\item $X_{8,ij}$: 1 if race = b
+\item $X_{9,ij}$: 1 if race = l
+\item $X_{10,ij}$: 1 if race = a
+\item $X_{11,ij}$: 1 if age 1
+\item $X_{12,ij}$: 1 if age 2
+\item $X_{13,ij}$: 1 if age 3
+\item $X_{14,ij}$: 1 if US born, 0 if immigrants
+\end{itemize}
+Note that if all education related variables take 0, then $i$ is education=d (drop-out). Note also that if all race related variables take 0, then $i$ is ``Other race.'' If all age related variables are 0, then age = 4 (oldest group). 
+
+Then, $\beta_{j}$ is the average wage of renter, female, dropout, other race, oldest age group, immigrants. 
+%------------------------
+\end{document}
